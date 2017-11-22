@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blue_grey_500">#607D8B</color>
+    <color name="blue_grey_600">#546E7A</color>
+    <color name="blue_grey_700">#455A64</color>
+    <color name="blue_grey_800">#37474F</color>
+    <color name="blue_grey_900">#263238</color>
+    <color name="background">#ffd966</color>
+    <color name="bottomborder">#333333</color>
+    <color name="highlight">#FFFF99</color>
+    <color name="background2">#D2D2D2</color>
+    <color name="text">#000000</color>
+    <color name="background3">#C6C6C6</color>
+    <color name="launch">#1c1c1c</color>
+    <color name="launch_status">#292929</color>
+</resources>

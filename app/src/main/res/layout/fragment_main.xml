@@ -1,0 +1,144 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.google.samples.quickstart.signin.MainActivity$Home">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3.75"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        >
+
+        <ViewFlipper
+            android:id="@+id/flipper1"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:flipInterval="3000"
+            android:autoStart="true"
+            android:layout_centerInParent="true">
+
+            <ImageView
+                android:src="@drawable/image1"
+                android:layout_width="match_parent"
+                android:scaleType="centerCrop"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:src="@drawable/image2"
+                android:layout_width="match_parent"
+                android:scaleType="centerCrop"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:src="@drawable/image3"
+                android:layout_width="match_parent"
+                android:scaleType="centerCrop"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:src="@drawable/image4"
+                android:layout_width="wrap_content"
+                android:scaleType="centerCrop"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                tools:ignore="ContentDescription" />
+
+
+        </ViewFlipper>
+        <LinearLayout
+            android:id="@+id/opacityFilter"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#A0000000"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="G$9"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:textSize="50sp"
+            android:textColor="@android:color/white"
+            android:id="@+id/homeTitle" />
+        <ImageView
+            android:layout_below="@id/homeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/profilePic"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="G$9"
+            android:layout_marginTop="250dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:textSize="25sp"
+            android:textColor="@android:color/white"
+            android:id="@+id/currentEvent" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/bottomborder"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/returnbutton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/bottomborder"
+            android:gravity="center"
+            android:onClick="returnClickedHome"
+            android:padding="10dp"
+            android:text="Return"
+            android:textColor="@android:color/white"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:id="@+id/hoursbutton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/bottomborder"
+            android:gravity="center"
+            android:onClick="hoursClickedHome"
+            android:padding="10dp"
+            android:text="Hours"
+            android:textColor="@android:color/white"
+            tools:ignore="ButtonStyle" />
+
+    </LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout>
