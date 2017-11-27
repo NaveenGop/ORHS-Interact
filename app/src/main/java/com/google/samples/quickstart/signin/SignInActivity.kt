@@ -1,5 +1,6 @@
 package com.google.samples.quickstart.signin
 
+import android.app.Activity
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
@@ -17,6 +18,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.common.api.Scope
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.tasks.Task
 import com.google.api.client.extensions.android.http.AndroidHttp
@@ -39,10 +41,10 @@ import java.util.*
  */
 class SignInActivity : AppCompatActivity(), View.OnClickListener {
 
-    private var mGoogleSignInClient: GoogleSignInClient? = null
-    private var mCredential: GoogleAccountCredential? = null
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private lateinit var mCredential: GoogleAccountCredential
 
-    private var mStatusTextView: TextView? = null
+    private lateinit var mStatusTextView: TextView
     private var backClicked: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +67,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                //.requestScopes(Scope(SheetsScopes.SPREADSHEETS_READONLY))
+                .requestScopes(Scope(SheetsScopes.SPREADSHEETS))
                 .build()
         // [END configure_signin]
 
@@ -93,6 +95,8 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         val account = GoogleSignIn.getLastSignedInAccount(this)
+        if (account != null)
+            checkPermissions()
         updateUI(account)
         // [END on_start_sign_in]
     }
@@ -102,11 +106,23 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleSignInResult(task)
+        when (requestCode) {
+            RC_SIGN_IN -> {
+                // The Task returned from this call is always completed, no need to attach
+                // a listener.
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                handleSignInResult(task)
+            }
+            REQUEST_PERMISSION_GET_ACCOUNTS -> {
+                if (resultCode == Activity.RESULT_OK)
+                    signIn()
+            }
+            REQUEST_PERMISSION_SCOPE, REQUEST_GOOGLE_PLAY_SERVICES -> {
+                if (resultCode != Activity.RESULT_OK)
+                    Toast.makeText(applicationContext, "Dawg we need this", Toast.LENGTH_LONG ).show()
+                else
+                    signIn()
+            }
         }
     }
     // [END onActivityResult]
@@ -117,10 +133,10 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
             val account = completedTask.getResult<ApiException>(ApiException::class.java)
             // Signed in successfully, show authenticated UI.
             if (!account.email!!.contains("eduhsd.k12.ca.us")) {
-                mGoogleSignInClient!!.signOut()
+                mGoogleSignInClient.signOut()
                 throw ApiException(Status(69, "Not ORHS"))
             }
-            mCredential!!.selectedAccount = account.account
+            mCredential.selectedAccount = account.account
             updateUI(account)
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
@@ -130,6 +146,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
                 CommonStatusCodes.TIMEOUT -> Toast.makeText(applicationContext, "Network Timeout. Sign-In Failed", Toast.LENGTH_LONG ).show()
                 CommonStatusCodes.INVALID_ACCOUNT -> Toast.makeText(applicationContext, "Not a Google Account. Sign-In Failed", Toast.LENGTH_LONG ).show()
                 69 -> Toast.makeText(applicationContext, "Not an ORHS account. Sign-In Failed", Toast.LENGTH_LONG ).show()
+                12501 -> Toast.makeText(applicationContext, "Spreadsheet Access Necessary. Sign-In Failed.", Toast.LENGTH_LONG ).show()
                 else -> { Toast.makeText(applicationContext, "Something went wrong. Sign-In Failed", Toast.LENGTH_LONG ).show() }
             }
 
@@ -142,14 +159,14 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
 
     // [START signIn]
     private fun signIn() {
-        val signInIntent = mGoogleSignInClient!!.signInIntent
+        val signInIntent = mGoogleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
     // [END signIn]
 
     // [START signOut]
     private fun signOut() {
-        mGoogleSignInClient!!.signOut()
+        mGoogleSignInClient.signOut()
                 .addOnCompleteListener(this) {
                     // [START_EXCLUDE]
                     updateUI(null)
@@ -161,7 +178,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
 
     // [START revokeAccess]
     private fun revokeAccess() {
-        mGoogleSignInClient!!.revokeAccess()
+        mGoogleSignInClient.revokeAccess()
                 .addOnCompleteListener(this) {
                     // [START_EXCLUDE]
                     updateUI(null)
@@ -171,23 +188,19 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
     }
     // [END revokeAccess]
 
-    private fun updateUI(account: GoogleSignInAccount?, events:List<String>? = null) {
+    private fun updateUI(account: GoogleSignInAccount?) {
         if (account != null) {
-            mStatusTextView!!.text = getString(R.string.signed_in_fmt, account.displayName)
+            mStatusTextView.text = getString(R.string.signed_in_fmt, account.displayName)
 
             findViewById<View>(R.id.sign_in_button).visibility = View.GONE
             findViewById<View>(R.id.sign_out_and_disconnect).visibility = View.VISIBLE
             if (!backClicked) {
-                if (mCredential!!.selectedAccount == null) {
-                    mCredential?.selectedAccount = account.account
-                    Log.i("hi", "onstart sheets success")
-                }
-                Log.i("hi", "onstart sheets success")
-                MakeRequestTask(mCredential!!).execute()
-                startActivity(Intent(this, MainActivity::class.java))
+                if (mCredential.selectedAccount == null)
+                    mCredential.selectedAccount = account.account
+                MakeRequestTask(mCredential).execute()
             }
         } else {
-            mStatusTextView!!.setText(R.string.signed_out)
+            mStatusTextView.setText(R.string.signed_out)
 
             findViewById<View>(R.id.sign_in_button).visibility = View.VISIBLE
             findViewById<View>(R.id.sign_out_and_disconnect).visibility = View.GONE
@@ -214,6 +227,27 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
 
+    /**
+     * With the onStart() call, ensure that all services are up-to-date and
+     * enabled. Redirects to proper methods to get permissions.
+     */
+    private fun checkPermissions(){
+        if (!GoogleSignIn.hasPermissions(
+                GoogleSignIn.getLastSignedInAccount(this), Scope(SheetsScopes.SPREADSHEETS))) {
+            GoogleSignIn.requestPermissions(
+                    this@SignInActivity,
+                    REQUEST_PERMISSION_SCOPE,
+                    GoogleSignIn.getLastSignedInAccount(this),
+                    Scope(SheetsScopes.SPREADSHEETS))
+        }
+        if (!EasyPermissions.hasPermissions(this, android.Manifest.permission.GET_ACCOUNTS)) {
+            // Request the GET_ACCOUNTS permission via a user dialog
+            chooseAccount()
+        }
+        if (!isGooglePlayServicesAvailable()) {
+            acquireGooglePlayServices()
+        }
+    }
 
     /**
      * Check that Google Play services APK is installed and up to date.
@@ -245,7 +279,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
      * @param connectionStatusCode code describing the presence (or lack of)
      * Google Play Services on this device.
      */
-    fun showGooglePlayServicesAvailabilityErrorDialog(
+    private fun showGooglePlayServicesAvailabilityErrorDialog(
             connectionStatusCode: Int) {
         val apiAvailability = GoogleApiAvailability.getInstance()
         val dialog = apiAvailability.getErrorDialog(
@@ -319,7 +353,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
 
         //TODO
         override fun onPostExecute(result: List<String>?) {
-            return
+            startActivity(Intent(this@SignInActivity, MainActivity::class.java))
         }
 
 
@@ -349,7 +383,8 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         private const val REQUEST_AUTHORIZATION = 1001
         private const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
         private const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
+        private const val REQUEST_PERMISSION_SCOPE = 1004
 
-        private val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS_READONLY)
+        private val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS)
     }
 }

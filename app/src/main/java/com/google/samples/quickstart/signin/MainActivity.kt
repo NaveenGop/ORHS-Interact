@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
      * may be best to switch to a
      * [android.support.v4.app.FragmentStatePagerAdapter].
      */
-    private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+    private lateinit var mSectionsPagerAdapter: SectionsPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,20 +87,24 @@ class MainActivity : AppCompatActivity() {
      */
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
+        private val pageTitles: List<String> = listOf("Home", "Event", "Info")
+
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
             // Return a Home (defined as a static inner class below).
             Log.v("hi", ""+position)
             when (position) {
-                0 -> return Home.newInstance(0)
+                // 0 -> return Home.newInstance(0)
                 2 -> return Info.newInstance(2)
                 // 3 -> Home.newInstance(1)
             }
-            return Info.newInstance(1)
+            return Info.newInstance(position)
         }
 
         //Show 3 total pages
         override fun getCount(): Int = 3
+
+        override fun getPageTitle(position: Int): CharSequence = pageTitles[position]
     }
 
     /**
@@ -146,9 +150,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.rescourcesbutton to "https://drive.google.com/folderview?id=0BwJLvdTM6Ac4UWlqSHlKTGhxRFk&usp=sharing",
                 R.id.githubbutton to "https://github.com/ORHS-Web-App-Dev")
 
-        override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
-            val rootView = inflater!!.inflate(R.layout.fragment_info, container, false)
+            val rootView = inflater.inflate(R.layout.fragment_info, container, false)
 
             img = rootView.findViewById<View>(R.id.aboutWAAD) as ImageView
 
