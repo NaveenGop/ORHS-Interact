@@ -38,18 +38,6 @@
             android:label="@string/name_sign_in_activity"
             android:theme="@style/ThemeOverlay.MyNoTitleActivity" />
         <activity
-            android:name=".IdTokenActivity"
-            android:label="@string/name_id_token_activity"
-            android:theme="@style/ThemeOverlay.MyNoTitleActivity" />
-        <activity
-            android:name=".ServerAuthCodeActivity"
-            android:label="@string/name_auth_code_activity"
-            android:theme="@style/ThemeOverlay.MyNoTitleActivity" />
-        <activity
-            android:name=".RestApiActivity"
-            android:label="@string/name_rest_activity"
-            android:theme="@style/ThemeOverlay.MyNoTitleActivity" />
-        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />

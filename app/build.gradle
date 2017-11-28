@@ -47,8 +47,8 @@ dependencies {
     compile 'pub.devrel:easypermissions:0.3.0'
 
     // Dependencies for the REST API example
-    compile 'com.google.api-client:google-api-client:1.22.0'
-    compile 'com.google.api-client:google-api-client-android:1.22.0'
+    compile 'com.google.api-client:google-api-client:1.23.0'
+    compile 'com.google.api-client:google-api-client-android:1.23.0'
     compile 'com.google.apis:google-api-services-people:v1-rev139-1.22.0'
 
     // UiAutomatorTesting

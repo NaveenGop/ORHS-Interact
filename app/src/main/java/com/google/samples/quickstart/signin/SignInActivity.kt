@@ -208,10 +208,13 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     //TODO Fix This Nig
-    /* override fun onBackPressed() {
-        val intent = Intent(this, MainActivity::class.java)
+    override fun onBackPressed() {
+
+        val intent = Intent(this
+                , if (GoogleSignIn.getLastSignedInAccount(this) == null) ChooserActivity::class.java
+                  else MainActivity::class.java)
         startActivity(intent)
-    }*/
+    }
 
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
     private fun chooseAccount() {

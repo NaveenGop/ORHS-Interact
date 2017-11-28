@@ -87,8 +87,6 @@ class MainActivity : AppCompatActivity() {
      */
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
-        private val pageTitles: List<String> = listOf("Home", "Event", "Info")
-
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
             // Return a Home (defined as a static inner class below).
@@ -103,8 +101,6 @@ class MainActivity : AppCompatActivity() {
 
         //Show 3 total pages
         override fun getCount(): Int = 3
-
-        override fun getPageTitle(position: Int): CharSequence = pageTitles[position]
     }
 
     /**
