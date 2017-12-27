@@ -2,6 +2,7 @@ package com.google.samples.quickstart.signin
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
@@ -12,8 +13,9 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
-import android.widget.ImageView
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.net.URLEncoder
 
 
 class MainActivity : AppCompatActivity() {
@@ -93,6 +95,7 @@ class MainActivity : AppCompatActivity() {
             Log.v("hi", ""+position)
             when (position) {
                 0 -> return Home.newInstance(0)
+                1 -> return Events.newInstance(1)
                 2 -> return Info.newInstance(2)
                 // 3 -> Home.newInstance(1)
             }
@@ -135,14 +138,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    /*
+
     class Events: Fragment() {
 
-        internal var browserIntent = Intent()
+        private var browserIntent = Intent()
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
-            return inflater.inflate(R.layout.events, container, false)
+            return inflater.inflate(R.layout.fragment_events, container, false)
         }
 
 
@@ -154,14 +157,14 @@ class MainActivity : AppCompatActivity() {
 
         //Later on, fix the method to have info and location
         private fun setAllViewInfo() {
-            for (event in MySpreadsheetIntegration.eventList) {
-                generateView(event.getName(), event.getDescription(), event.getLocation(), event.getDate(), event.getLink())
+            for (event in SignInActivity.eventList) {
+                generateView(event["name"]!!, event["desc"]!!, event["location"]!!, event["date"]!!, event["link"]!!)
             }
         }
 
 
         private fun generateView(Title: String, Info: String, Place: String, Time: String, link: String): Int {
-            var Info = Info
+            var info = Info
             //Creating Relative Layout Programmatically
             val relativeLayout = RelativeLayout(activity)
             //CHANGE LATER
@@ -204,10 +207,10 @@ class MainActivity : AppCompatActivity() {
             var placeToDisplay = Place
             if (Place.length > 15)
                 placeToDisplay = placeToDisplay.substring(0, 16) + "..."
-            if (Info.length > 30)
-                Info = Info.substring(0, 31) + "..."
+            if (info.length > 30)
+                info = info.substring(0, 31) + "..."
 
-            infoView.text = placeToDisplay + "\n" + Time + "\n" + Info
+            infoView.text = placeToDisplay + "\n" + Time + "\n" + info
             infoView.setTextColor(ContextCompat.getColor(activity, R.color.text))
 
             //////////////// BUTTON ///////////////
@@ -227,8 +230,8 @@ class MainActivity : AppCompatActivity() {
             signUpButton.setTextColor(ContextCompat.getColor(activity, R.color.text))
             signUpButton.id = View.generateViewId()
             signUpButton.setOnClickListener {
-                Events.browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                startActivity(Events.browserIntent)
+                this.browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                startActivity(this.browserIntent)
             }
 
 
@@ -275,8 +278,8 @@ class MainActivity : AppCompatActivity() {
              * Returns a new instance of this fragment for the given section
              * number.
              */
-            fun newInstance(sectionNumber: Int): Home {
-                val fragment = Home()
+            fun newInstance(sectionNumber: Int): Events {
+                val fragment = Events()
                 val args = Bundle()
                 args.putInt(ARG_SECTION_NUMBER, sectionNumber)
                 fragment.arguments = args
@@ -284,7 +287,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    */
+
 
     class Info : Fragment(), View.OnClickListener {
 

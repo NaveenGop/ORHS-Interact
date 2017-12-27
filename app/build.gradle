@@ -37,7 +37,7 @@ dependencies {
     compile 'com.android.support:design:26.1.0'
 
     // Dependency for Google Sign-In
-    compile 'com.google.android.gms:play-services-auth:11.6.2'
+    compile 'com.google.android.gms:play-services-auth:11.8.0'
 
     //Dependency for Google Sheets
     compile('com.google.apis:google-api-services-sheets:v4-rev491-1.23.0') {

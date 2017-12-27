@@ -42,6 +42,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
     private var backClicked: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.ThemeOverlay_MyNoTitleActivity)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
@@ -191,7 +192,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
             if (!backClicked) {
                 if (mCredential.selectedAccount == null)
                     mCredential.selectedAccount = account.account
-                MakeRequestTask(mCredential, this, "Class Data!A2:E", "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms").execute()
+                MakeRequestTask(mCredential, this, "Sheet1", "1uTxOe8usrx7o460tH3BAL5iPZRVmEyulkIoyGHa_FsQ").execute()
             }
         } else {
             mStatusTextView.setText(R.string.signed_out)
@@ -203,10 +204,10 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
 
 
     override fun onBackPressed() {
-        val intent = Intent(this,
-                if (GoogleSignIn.getLastSignedInAccount(this) == null) ChooserActivity::class.java
-                else MainActivity::class.java)
-        startActivity(intent)
+        if (GoogleSignIn.getLastSignedInAccount(this) != null) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
@@ -300,7 +301,8 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
                                                              id: String) : SpreadsheetIntegration(credential, activity, range, id) {
 
         //TODO
-        override fun onPostExecute(result: List<String>?) {
+        override fun onPostExecute(result: List<Map<String, String>>?) {
+            eventList = result!!
             startActivity(Intent(this@SignInActivity, MainActivity::class.java))
         }
     }
@@ -316,5 +318,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         private const val REQUEST_PERMISSION_SCOPE = 1004
 
         private val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS)
+
+        lateinit var eventList: List<Map<String, String>>
     }
 }

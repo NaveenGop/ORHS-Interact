@@ -21,7 +21,7 @@ import java.util.*
 abstract class SpreadsheetIntegration internal constructor(credential: GoogleAccountCredential,
                                                            activity: Activity,
                                                            private val range: String,
-                                                           private val spreadsheetId: String) : AsyncTask<Void, Void, List<String>>() {
+                                                           private val spreadsheetId: String) : AsyncTask<Void, Void, List<Map<String, String>>>() {
 
     private val weakActivity: WeakReference<Activity> = WeakReference(activity)
     private var mService: com.google.api.services.sheets.v4.Sheets? = null
@@ -33,21 +33,24 @@ abstract class SpreadsheetIntegration internal constructor(credential: GoogleAcc
      * @return List of names and majors
      * @throws IOException
      */
-    private val dataFromApi: List<String>
+    private val dataFromApi: List<Map<String, String>>
         @Throws(IOException::class)
         get() {
            // val spreadsheetId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
             // val range = "Class Data!A2:E"
-            val results = ArrayList<String>()
+            val results: List<Map<String, String>>
             val response = this.mService!!.spreadsheets().values()
                     .get(spreadsheetId, range)
+                    .setMajorDimension("COLUMNS")
                     .execute()
             val values = response.getValues()
+            values?.removeAt(0)
             Log.i("Hi", "async executed")
-            if (values != null) {
-                results.add("Name, Major")
-                values.mapTo(results) { it[0].toString() + ", " + it[4] }
-            }
+            results = values?.map { mapOf("name" to it[1].toString(),
+                    "date" to it[2].toString(),
+                    "link" to it[3].toString(),
+                    "location" to it[4].toString(),
+                    "desc" to it[5].toString()) } ?: ArrayList()
             Log.i("Hi", "async complete")
             return results
         }
@@ -65,7 +68,7 @@ abstract class SpreadsheetIntegration internal constructor(credential: GoogleAcc
      * Background task to call Google Sheets API.
      * @param params no parameters needed for this task.
      */
-    override fun doInBackground(vararg params: Void): List<String>? {
+    override fun doInBackground(vararg params: Void): List<Map<String, String>>? {
         return try {
             dataFromApi
         } catch (e: Exception) {
@@ -77,7 +80,7 @@ abstract class SpreadsheetIntegration internal constructor(credential: GoogleAcc
     }
 
     //TODO
-    override fun onPostExecute(result: List<String>?) {
+    override fun onPostExecute(result: List<Map<String, String>>?) {
         //startActivity(Intent(this@SignInActivity, MainActivity::class.java))
     }
 
