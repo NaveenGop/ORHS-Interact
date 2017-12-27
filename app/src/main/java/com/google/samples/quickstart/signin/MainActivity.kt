@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
             // Return a Home (defined as a static inner class below).
             Log.v("hi", ""+position)
             when (position) {
-                // 0 -> return Home.newInstance(0)
+                0 -> return Home.newInstance(0)
                 2 -> return Info.newInstance(2)
                 // 3 -> Home.newInstance(1)
             }
@@ -135,7 +135,156 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    /*
+    class Events: Fragment() {
 
+        internal var browserIntent = Intent()
+
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                                  savedInstanceState: Bundle?): View? {
+            return inflater.inflate(R.layout.events, container, false)
+        }
+
+
+        override fun onActivityCreated(savedInstanceState: Bundle?) {
+            super.onActivityCreated(savedInstanceState)
+            setAllViewInfo()
+        }
+
+
+        //Later on, fix the method to have info and location
+        private fun setAllViewInfo() {
+            for (event in MySpreadsheetIntegration.eventList) {
+                generateView(event.getName(), event.getDescription(), event.getLocation(), event.getDate(), event.getLink())
+            }
+        }
+
+
+        private fun generateView(Title: String, Info: String, Place: String, Time: String, link: String): Int {
+            var Info = Info
+            //Creating Relative Layout Programmatically
+            val relativeLayout = RelativeLayout(activity)
+            //CHANGE LATER
+            relativeLayout.id = View.generateViewId()
+            relativeLayout.setBackgroundResource(R.drawable.borders)
+            val rlp = RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT)
+            rlp.topMargin = 15
+            relativeLayout.layoutParams = rlp
+            ////////////// TEXT VIEWS //////////////
+
+            val titleView = TextView(activity)
+            titleView.setTextColor(ContextCompat.getColor(activity, R.color.text))
+            titleView.setBackgroundResource(R.color.background2)
+            if (Build.VERSION.SDK_INT < 23) {
+                titleView.setTextAppearance(activity, android.R.style.TextAppearance_Large)
+            } else {
+                titleView.setTextAppearance(android.R.style.TextAppearance_Large)
+            }
+            //CHANGE LATER
+            titleView.id = View.generateViewId()
+            titleView.layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            titleView.text = Title
+            titleView.setTextColor(ContextCompat.getColor(activity, R.color.text))
+            val infoView = TextView(activity)
+            if (Build.VERSION.SDK_INT < 23) {
+                infoView.setTextAppearance(activity, android.R.style.TextAppearance_Small)
+            } else {
+                infoView.setTextAppearance(android.R.style.TextAppearance_Small)
+            }
+            infoView.id = View.generateViewId()
+            val infoLayout = RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT)
+            infoLayout.addRule(RelativeLayout.BELOW, titleView.id)
+            infoView.layoutParams = infoLayout
+            var placeToDisplay = Place
+            if (Place.length > 15)
+                placeToDisplay = placeToDisplay.substring(0, 16) + "..."
+            if (Info.length > 30)
+                Info = Info.substring(0, 31) + "..."
+
+            infoView.text = placeToDisplay + "\n" + Time + "\n" + Info
+            infoView.setTextColor(ContextCompat.getColor(activity, R.color.text))
+
+            //////////////// BUTTON ///////////////
+
+            val signUpButton = Button(activity)
+            signUpButton.setBackgroundResource(R.drawable.alternativebuttons)
+            //signUpButton.getBackground().setColorFilter(
+            //getResources().getColor(R.color.blue_grey_500), PorterDuff.Mode.MULTIPLY);
+            val buttonLayout = RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT)
+            buttonLayout.addRule(RelativeLayout.CENTER_VERTICAL)
+            buttonLayout.addRule(RelativeLayout.ALIGN_PARENT_END)
+            signUpButton.gravity = Gravity.CENTER
+            signUpButton.layoutParams = buttonLayout
+            signUpButton.text = "Sign Up"
+            signUpButton.setTextColor(ContextCompat.getColor(activity, R.color.text))
+            signUpButton.id = View.generateViewId()
+            signUpButton.setOnClickListener {
+                Events.browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                startActivity(Events.browserIntent)
+            }
+
+
+            //////////////// BUTTON ///////////////
+
+            val locationButton = ImageButton(activity)
+            locationButton.setImageResource(R.drawable.marker)
+            val locationButtonLayout = RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT)
+            locationButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+            locationButtonLayout.addRule(RelativeLayout.BELOW, infoView.id)
+            locationButtonLayout.setMargins(0, 10, 0, 0)
+            locationButton.layoutParams = locationButtonLayout
+            locationButton.id = View.generateViewId()
+            locationButton.setOnClickListener {
+                startActivity(Intent(Intent.ACTION_VIEW,
+                        Uri.parse(String.format("geo:0,0?q=%s",
+                                URLEncoder.encode(Place)))))
+            }
+
+
+            relativeLayout.setPadding(20, 10, 30, 10)
+            //////////////Combine Everything///////////
+
+            relativeLayout.addView(titleView)
+            relativeLayout.addView(infoView)
+            relativeLayout.addView(signUpButton)
+            relativeLayout.addView(locationButton)
+            val layout = activity.findViewById(R.id.scrollLayout) as LinearLayout ?: return 1
+            layout.addView(relativeLayout)
+            return signUpButton.id
+
+        }
+
+        companion object {
+            /**
+             * The fragment argument representing the section number for this
+             * fragment.
+             */
+            private val ARG_SECTION_NUMBER = "section_number"
+
+            /**
+             * Returns a new instance of this fragment for the given section
+             * number.
+             */
+            fun newInstance(sectionNumber: Int): Home {
+                val fragment = Home()
+                val args = Bundle()
+                args.putInt(ARG_SECTION_NUMBER, sectionNumber)
+                fragment.arguments = args
+                return fragment
+            }
+        }
+    }
+    */
 
     class Info : Fragment(), View.OnClickListener {
 

@@ -37,7 +37,7 @@ dependencies {
     compile 'com.android.support:design:26.1.0'
 
     // Dependency for Google Sign-In
-    compile 'com.google.android.gms:play-services-auth:11.6.0'
+    compile 'com.google.android.gms:play-services-auth:11.6.2'
 
     //Dependency for Google Sheets
     compile('com.google.apis:google-api-services-sheets:v4-rev491-1.23.0') {
@@ -49,7 +49,7 @@ dependencies {
     // Dependencies for the REST API example
     compile 'com.google.api-client:google-api-client:1.23.0'
     compile 'com.google.api-client:google-api-client-android:1.23.0'
-    compile 'com.google.apis:google-api-services-people:v1-rev139-1.22.0'
+    compile 'com.google.apis:google-api-services-people:v1-rev183-1.23.0'
 
     // UiAutomatorTesting
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
