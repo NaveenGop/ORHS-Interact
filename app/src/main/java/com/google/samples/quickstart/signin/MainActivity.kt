@@ -2,20 +2,25 @@ package com.google.samples.quickstart.signin
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
-import android.widget.*
+import android.widget.ImageView
+import android.widget.TextView
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.util.ExponentialBackOff
 import kotlinx.android.synthetic.main.activity_main.*
-import java.net.URLEncoder
+import java.util.*
+
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -41,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set up the ViewPager with the sections adapter.
         container.adapter = mSectionsPagerAdapter
+
 
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
         tabs.run {
@@ -97,7 +103,6 @@ class MainActivity : AppCompatActivity() {
                 0 -> return Home.newInstance(0)
                 1 -> return Events.newInstance(1)
                 2 -> return Info.newInstance(2)
-                // 3 -> Home.newInstance(1)
             }
             return Info.newInstance(position)
         }
@@ -113,8 +118,9 @@ class MainActivity : AppCompatActivity() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
-            val rootView = inflater.inflate(R.layout.fragment_main, container, false)
             //rootView.section_label.text = getString(R.string.section_format, arguments.getInt(ARG_SECTION_NUMBER))
+            val rootView: View = inflater.inflate(R.layout.fragment_main, container, false)
+            (rootView.findViewById(R.id.homeTitle) as TextView).text = SignInActivity.mAccount.displayName
             return rootView
         }
 
@@ -140,8 +146,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     class Events: Fragment() {
-
-        private var browserIntent = Intent()
+        private lateinit var mCredential: GoogleAccountCredential
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
@@ -151,133 +156,28 @@ class MainActivity : AppCompatActivity() {
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-            setAllViewInfo()
+            mCredential = GoogleAccountCredential.usingOAuth2(
+                    context, Arrays.asList(*SignInActivity.SCOPES))
+                    .setBackOff(ExponentialBackOff())
+            mCredential.selectedAccount = SignInActivity.mAccount.account
+            MakeRequestTask(mCredential, activity, "Sheet1", "1uTxOe8usrx7o460tH3BAL5iPZRVmEyulkIoyGHa_FsQ").execute()
+            //setAllViewInfo()
         }
 
+        private inner class MakeRequestTask internal constructor(credential: GoogleAccountCredential,
+                                                                 activity: FragmentActivity,
+                                                                 range: String,
+                                                                 id: String) : SpreadsheetIntegration(credential, activity, range, id) {
 
-        //Later on, fix the method to have info and location
-        private fun setAllViewInfo() {
-            for (event in SignInActivity.eventList) {
-                generateView(event["name"]!!, event["desc"]!!, event["location"]!!, event["date"]!!, event["link"]!!)
+            //TODO
+            override fun onPostExecute(result: Void?) {
+                println("nigger")
             }
-        }
-
-
-        private fun generateView(Title: String, Info: String, Place: String, Time: String, link: String): Int {
-            var info = Info
-            //Creating Relative Layout Programmatically
-            val relativeLayout = RelativeLayout(activity)
-            //CHANGE LATER
-            relativeLayout.id = View.generateViewId()
-            relativeLayout.setBackgroundResource(R.drawable.borders)
-            val rlp = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.MATCH_PARENT)
-            rlp.topMargin = 15
-            relativeLayout.layoutParams = rlp
-            ////////////// TEXT VIEWS //////////////
-
-            val titleView = TextView(activity)
-            titleView.setTextColor(ContextCompat.getColor(activity, R.color.text))
-            titleView.setBackgroundResource(R.color.background2)
-            if (Build.VERSION.SDK_INT < 23) {
-                titleView.setTextAppearance(activity, android.R.style.TextAppearance_Large)
-            } else {
-                titleView.setTextAppearance(android.R.style.TextAppearance_Large)
-            }
-            //CHANGE LATER
-            titleView.id = View.generateViewId()
-            titleView.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT)
-            titleView.text = Title
-            titleView.setTextColor(ContextCompat.getColor(activity, R.color.text))
-            val infoView = TextView(activity)
-            if (Build.VERSION.SDK_INT < 23) {
-                infoView.setTextAppearance(activity, android.R.style.TextAppearance_Small)
-            } else {
-                infoView.setTextAppearance(android.R.style.TextAppearance_Small)
-            }
-            infoView.id = View.generateViewId()
-            val infoLayout = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT)
-            infoLayout.addRule(RelativeLayout.BELOW, titleView.id)
-            infoView.layoutParams = infoLayout
-            var placeToDisplay = Place
-            if (Place.length > 15)
-                placeToDisplay = placeToDisplay.substring(0, 16) + "..."
-            if (info.length > 30)
-                info = info.substring(0, 31) + "..."
-
-            infoView.text = placeToDisplay + "\n" + Time + "\n" + info
-            infoView.setTextColor(ContextCompat.getColor(activity, R.color.text))
-
-            //////////////// BUTTON ///////////////
-
-            val signUpButton = Button(activity)
-            signUpButton.setBackgroundResource(R.drawable.alternativebuttons)
-            //signUpButton.getBackground().setColorFilter(
-            //getResources().getColor(R.color.blue_grey_500), PorterDuff.Mode.MULTIPLY);
-            val buttonLayout = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT)
-            buttonLayout.addRule(RelativeLayout.CENTER_VERTICAL)
-            buttonLayout.addRule(RelativeLayout.ALIGN_PARENT_END)
-            signUpButton.gravity = Gravity.CENTER
-            signUpButton.layoutParams = buttonLayout
-            signUpButton.text = "Sign Up"
-            signUpButton.setTextColor(ContextCompat.getColor(activity, R.color.text))
-            signUpButton.id = View.generateViewId()
-            signUpButton.setOnClickListener {
-                this.browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                startActivity(this.browserIntent)
-            }
-
-
-            //////////////// BUTTON ///////////////
-
-            val locationButton = ImageButton(activity)
-            locationButton.setImageResource(R.drawable.marker)
-            val locationButtonLayout = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT)
-            locationButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-            locationButtonLayout.addRule(RelativeLayout.BELOW, infoView.id)
-            locationButtonLayout.setMargins(0, 10, 0, 0)
-            locationButton.layoutParams = locationButtonLayout
-            locationButton.id = View.generateViewId()
-            locationButton.setOnClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW,
-                        Uri.parse(String.format("geo:0,0?q=%s",
-                                URLEncoder.encode(Place)))))
-            }
-
-
-            relativeLayout.setPadding(20, 10, 30, 10)
-            //////////////Combine Everything///////////
-
-            relativeLayout.addView(titleView)
-            relativeLayout.addView(infoView)
-            relativeLayout.addView(signUpButton)
-            relativeLayout.addView(locationButton)
-            val layout = activity.findViewById(R.id.scrollLayout) as LinearLayout ?: return 1
-            layout.addView(relativeLayout)
-            return signUpButton.id
-
         }
 
         companion object {
-            /**
-             * The fragment argument representing the section number for this
-             * fragment.
-             */
             private val ARG_SECTION_NUMBER = "section_number"
 
-            /**
-             * Returns a new instance of this fragment for the given section
-             * number.
-             */
             fun newInstance(sectionNumber: Int): Events {
                 val fragment = Events()
                 val args = Bundle()

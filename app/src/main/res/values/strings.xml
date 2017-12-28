@@ -37,8 +37,11 @@
     <string name="desc_sign_in_activity">Signing in, signing out, and revoking access.</string>
     <string name="desc_sign_in_activity_scopes">Signing in, signing out, and revoking access with Google Drive permissions.</string>
 
+    <!-- Events TextViews -->
+    <string name="info">%s\n%s\n%s</string>
+    <string name="signin">"Sign In"</string>
 
-
+    <!-- Info TextViews -->
     <string name="title">About Interact</string>
     <string name="description">Interact is a service club for young people in Oak Ridge who want to join together to tackle the issues in their community that they care most about. Through Interact, you can carry out hands-on service projects, make new connections, develop leadership skills, and have fun!</string>
     <string name="design">This app was designed by Vasanth Sadhasivan as a member of the Oak Ridge Web and App Development Club in 2015.</string>

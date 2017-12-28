@@ -2,6 +2,8 @@ package com.google.samples.quickstart.signin
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -192,7 +194,8 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
             if (!backClicked) {
                 if (mCredential.selectedAccount == null)
                     mCredential.selectedAccount = account.account
-                MakeRequestTask(mCredential, this, "Sheet1", "1uTxOe8usrx7o460tH3BAL5iPZRVmEyulkIoyGHa_FsQ").execute()
+                mAccount = account
+                startActivity(Intent(this@SignInActivity, MainActivity::class.java))
             }
         } else {
             mStatusTextView.setText(R.string.signed_out)
@@ -276,7 +279,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
      * @param connectionStatusCode code describing the presence (or lack of)
      * Google Play Services on this device.
      */
-    fun showGooglePlayServicesAvailabilityErrorDialog(
+    private fun showGooglePlayServicesAvailabilityErrorDialog(
             connectionStatusCode: Int) {
         val apiAvailability = GoogleApiAvailability.getInstance()
         val dialog = apiAvailability.getErrorDialog(
@@ -295,16 +298,14 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private inner class MakeRequestTask internal constructor(credential: GoogleAccountCredential,
-                                                             activity: SignInActivity,
-                                                             range: String,
-                                                             id: String) : SpreadsheetIntegration(credential, activity, range, id) {
-
-        //TODO
-        override fun onPostExecute(result: List<Map<String, String>>?) {
-            eventList = result!!
-            startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+    /**
+     * Background Async task to load user profile picture from url
+     * */
+    private class LoadProfileImage : AsyncTask<String, Void, Bitmap>() {
+        override fun doInBackground(vararg p0: String?): Bitmap {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
+
     }
 
     companion object {
@@ -317,8 +318,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         private const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
         private const val REQUEST_PERMISSION_SCOPE = 1004
 
-        private val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS)
-
-        lateinit var eventList: List<Map<String, String>>
+        val SCOPES = arrayOf(SheetsScopes.SPREADSHEETS)
+        lateinit var mAccount: GoogleSignInAccount
     }
 }
